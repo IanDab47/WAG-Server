@@ -35,9 +35,9 @@ const PORT = process.env.PORT || 3001;
 app.use(express_1.default.json());
 app.use((0, morgan_1.default)('dev')); // Comment out to remove request logging
 app.get('/', (req, res) => {
-    res.json({ msg: 'hello backend 🤖' });
+    res.json({ msg: 'hello backend 🐀🐀🐀' });
 });
 app.listen(PORT, () => {
-    console.log(`is that port ${PORT} I hear? 🐕`);
+    console.log(`is that port ${PORT} I hear? 🐀`);
 });
 //# sourceMappingURL=server.js.map

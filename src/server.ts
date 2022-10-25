@@ -10,9 +10,9 @@ app.use(express.json())
 app.use(morgan('dev')) // Comment out to remove request logging
 
 app.get('/', (req, res) => {
-  res.json({ msg: 'hello backend 🤖' })
+  res.json({ msg: 'hello backend 🐀🐀🐀' })
 })
 
 app.listen(PORT, () => {
-  console.log(`is that port ${PORT} I hear? 🐕`)
+  console.log(`is that port ${PORT} I hear? 🐀`)
 })
