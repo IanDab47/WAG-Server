@@ -3,30 +3,74 @@ import { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose'
 import { UserType } from '../../typings';
 import User, { UserModel } from '../models/User';
-// import bcrypt from 'bcrypt'
-// import jwt from 'jsonwebtoken'
-// const db = require('../../models')
-// import authLockedRoute from './authLockedRoute'
-// const bcrypt = require('bcryptjs')
-// const jwt = require('jsonwebtoken')
-// const authLockedRoute = require('./authLockedRoute')
+import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
+import authLockedRoute from '../routes/authLockedRoute'
 
-const createUser = (req: Request, res: Response, next: NextFunction) => {
-  const { name, username, email, password } = req.body
 
-  const user = new User({
-    _id: new mongoose.Types.ObjectId(),
-    name,
-    username,
-    email,
-    password
-  })
+// testing createUser (works but no auth)
+// const createUser = (req: Request, res: Response, next: NextFunction) => {
+//   const { name, username, email, password } = req.body
 
-  return user
-    .save()
-    .then((result: any) => res.status(201).json({ result }))
-    .catch((error: any) => res.status(500).json({ error }))
+//   const user = new User({
+//     _id: new mongoose.Types.ObjectId(),
+//     name,
+//     username,
+//     email,
+//     password
+//   })
+
+//   return user
+//     .save()
+//     .then((result: any) => res.status(201).json({ result }))
+//     .catch((error: any) => res.status(500).json({ error }))
+// }
+
+// creates a new user in db with hashedpassword and jwt token
+const createUser = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { name, username, email, password } = req.body
+
+    const findUser = await User.findOne({
+      email: email
+    })
+  
+    if (findUser) return res.status(400).json({msg: 'email exists already, please login'})
+  
+    // hash password
+    const saltRounds = 12;
+    const hashedPassword = await bcrypt.hash(password, saltRounds)
+
+    
+  
+    // creates new user
+    const user = new User({
+      _id: new mongoose.Types.ObjectId(),
+      name,
+      username,
+      email,
+      password: hashedPassword
+    })
+  
+    await user.save()
+
+    // create jwt payload
+    const payload = {
+      username: user.username,
+      email: user.email,
+      id: user.id
+    }
+  
+    const token = await jwt.sign(payload, process.env.JWT_SECRET)
+  
+    res.json(token)
+
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({msg: 'server error'})
+  }
 }
+
 
 const getUser = (req: Request, res: Response, next: NextFunction) => {
   const userId = req.params.userId
@@ -109,52 +153,8 @@ export default {
   addScore
 }
 
-// GET /users - test endpoint
-// router.get('/', (req: any, res: any) => {
-//   res.json({ msg: 'welcome to the users endpoint' })
-// })
 
-// POST /users/register - CREATE new user
-// router.post('/register', async (req: any, res: any) => {
-//   try {
-//     // check if user exists already
-//     const findUser = await db.User.findOne({
-//       email: req.body.email
-//     })
 
-//     // don't allow emails to register twice
-//     if(findUser) return res.status(400).json({ msg: 'email exists already' })
-
-//     // hash password
-//     const password = req.body.password
-//     const saltRounds = 12;
-//     const hashedPassword = await bcrypt.hash(password, saltRounds)
-
-//     // create new user
-//     const newUser = new db.User({
-//       name: req.body.name,
-//       email: req.body.email,
-//       password: hashedPassword
-//     })
-
-//     await newUser.save()
-
-//     // create jwt payload
-//     const payload = {
-//       name: newUser.name,
-//       email: newUser.email,
-//       id: newUser.id
-//     }
-
-//     // sign jwt and send back
-//     const token = await jwt.sign(payload, process.env.JWT_SECRET)
-
-//     res.json({ token })
-//   } catch (err) {
-//     console.log(err)
-//     res.status(500).json({ msg: 'server error'  })
-//   }
-// })
 
 // // POST /users/login -- validate login credentials
 // router.post('/login', async (req: any, res: any) => {
