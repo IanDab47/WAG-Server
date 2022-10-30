@@ -3,7 +3,7 @@ import { number, string } from 'joi'
 import mongoose, { Document, Schema } from 'mongoose'
 import { UserType } from '../../typings'
 
-export interface UserModel extends UserType, Document{}
+export interface UserModel extends UserType, Document {}
 
 const UserSchema: Schema = new Schema({
   name: {
@@ -31,7 +31,7 @@ const UserSchema: Schema = new Schema({
       ]
     }
   }, {
-  timestamps: true
+  timestamps: true,
 })
 
 export default mongoose.model<UserModel>('User', UserSchema)
