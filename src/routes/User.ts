@@ -1,8 +1,7 @@
 import express from 'express'
 import controller from '../controllers/users'
 import model from '../models/User'
-import { Schemas, ValidateJoi } from '../middleware/joi'
-import { models } from 'mongoose'
+// import { Schemas, ValidateJoi } from '../middleware/joi'
 
 const router = express.Router()
 

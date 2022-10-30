@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const users_1 = __importDefault(require("../controllers/users"));
 const User_1 = __importDefault(require("../models/User"));
+// import { Schemas, ValidateJoi } from '../middleware/joi'
 const router = express_1.default.Router();
 router.post('/create', users_1.default.createUser(User_1.default));
 router.get('/:userId', users_1.default.getUser(User_1.default));

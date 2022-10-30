@@ -11,7 +11,7 @@ import User from '../models/User';
 // const jwt = require('jsonwebtoken')
 // const authLockedRoute = require('./authLockedRoute')
 
-const createUser = (model: Model<UserType>) => (req: Request, res: Response, next: NextFunction) => {
+const createUser = (model: Model<any>) => (req: Request, res: Response, next: NextFunction) => {
   console.log('Creating new user for ' + model.modelName)
 
   const { name, username, email, password } = req.body
@@ -26,7 +26,7 @@ const createUser = (model: Model<UserType>) => (req: Request, res: Response, nex
 
   return user
     .save()
-    .then((result: UserType) => res.status(201).json({ result }))
+    .then((result: any) => res.status(201).json({ result }))
     .catch((error: any) => res.status(500).json({ error }))
 }
 
