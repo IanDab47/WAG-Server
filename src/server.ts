@@ -1,6 +1,7 @@
-import express from 'express'
+import express, { Express, Request, Response } from 'express';
 import morgan from 'morgan'
-require('dotenv').config()
+import dotenv from 'dotenv'
+dotenv.config()
 
 const app = express()
 const PORT = process.env.PORT || 3001
@@ -13,7 +14,7 @@ app.get('/', (req, res) => {
 })
 
 // controllers
-app.use('/api-v1/users', require('./controllers/api-v1/users.js'))
+app.use('/users', require('./controllers/users.js'))
 
 app.listen(PORT, () => {
   console.log(`is that port ${PORT} I hear? 🐀`)

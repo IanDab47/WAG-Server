@@ -1,10 +1,14 @@
-const express = require('express')
-const router = express.Router()
-const db = require('../../models')
-const bcrypt = require('bcryptjs')
-const jwt = require('jsonwebtoken')
-const authLockedRoute = require('./authLockedRoute')
+// const express = require('express')
+import express, { Express, Request, Response } from 'express';
+import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
+// const db = require('../../models')
+// import authLockedRoute from './authLockedRoute'
+// const bcrypt = require('bcryptjs')
+// const jwt = require('jsonwebtoken')
+// const authLockedRoute = require('./authLockedRoute')
 
+const router = express.Router()
 
 // GET /users - test endpoint
 router.get('/', (req: any, res: any) => {
@@ -12,87 +16,87 @@ router.get('/', (req: any, res: any) => {
 })
 
 // POST /users/register - CREATE new user
-router.post('/register', async (req: any, res: any) => {
-  try {
-    // check if user exists already
-    const findUser = await db.User.findOne({
-      email: req.body.email
-    })
+// router.post('/register', async (req: any, res: any) => {
+//   try {
+//     // check if user exists already
+//     const findUser = await db.User.findOne({
+//       email: req.body.email
+//     })
 
-    // don't allow emails to register twice
-    if(findUser) return res.status(400).json({ msg: 'email exists already' })
-  
-    // hash password
-    const password = req.body.password
-    const saltRounds = 12;
-    const hashedPassword = await bcrypt.hash(password, saltRounds)
-  
-    // create new user
-    const newUser = new db.User({
-      name: req.body.name,
-      email: req.body.email,
-      password: hashedPassword
-    })
-  
-    await newUser.save()
+//     // don't allow emails to register twice
+//     if(findUser) return res.status(400).json({ msg: 'email exists already' })
 
-    // create jwt payload
-    const payload = {
-      name: newUser.name,
-      email: newUser.email, 
-      id: newUser.id
-    }
+//     // hash password
+//     const password = req.body.password
+//     const saltRounds = 12;
+//     const hashedPassword = await bcrypt.hash(password, saltRounds)
 
-    // sign jwt and send back
-    const token = await jwt.sign(payload, process.env.JWT_SECRET)
+//     // create new user
+//     const newUser = new db.User({
+//       name: req.body.name,
+//       email: req.body.email,
+//       password: hashedPassword
+//     })
 
-    res.json({ token })
-  } catch (err) {
-    console.log(err)
-    res.status(500).json({ msg: 'server error'  })
-  }
-})
+//     await newUser.save()
 
-// POST /users/login -- validate login credentials
-router.post('/login', async (req: any, res: any) => {
-  try {
-    // try to find user in the db
-    const foundUser = await db.User.findOne({
-      email: req.body.email
-    })
+//     // create jwt payload
+//     const payload = {
+//       name: newUser.name,
+//       email: newUser.email,
+//       id: newUser.id
+//     }
 
-    const noLoginMessage = 'Incorrect username or password'
+//     // sign jwt and send back
+//     const token = await jwt.sign(payload, process.env.JWT_SECRET)
 
-    // if the user is not found in the db, return and sent a status of 400 with a message
-    if(!foundUser) return res.status(400).json({ msg: noLoginMessage })
-    
-    // check the password from the req body against the password in the database
-    const matchPasswords = await bcrypt.compare(req.body.password, foundUser.password)
-    
-    // if provided password does not match, return an send a status of 400 with a message
-    if(!matchPasswords) return res.status(400).json({ msg: noLoginMessage })
+//     res.json({ token })
+//   } catch (err) {
+//     console.log(err)
+//     res.status(500).json({ msg: 'server error'  })
+//   }
+// })
 
-    // create jwt payload
-    const payload = {
-      name: foundUser.name,
-      email: foundUser.email, 
-      id: foundUser.id
-    }
+// // POST /users/login -- validate login credentials
+// router.post('/login', async (req: any, res: any) => {
+//   try {
+//     // try to find user in the db
+//     const foundUser = await db.User.findOne({
+//       email: req.body.email
+//     })
 
-    // sign jwt and send back
-    const token = await jwt.sign(payload, process.env.JWT_SECRET)
+//     const noLoginMessage = 'Incorrect username or password'
 
-    res.json({ token })
-  } catch(err) {
-    console.log(err)
-    res.status(500).json({ msg: 'server error'  })
-  }
-})
+//     // if the user is not found in the db, return and sent a status of 400 with a message
+//     if(!foundUser) return res.status(400).json({ msg: noLoginMessage })
+
+//     // check the password from the req body against the password in the database
+//     const matchPasswords = await bcrypt.compare(req.body.password, foundUser.password)
+
+//     // if provided password does not match, return an send a status of 400 with a message
+//     if(!matchPasswords) return res.status(400).json({ msg: noLoginMessage })
+
+//     // create jwt payload
+//     const payload = {
+//       name: foundUser.name,
+//       email: foundUser.email,
+//       id: foundUser.id
+//     }
+
+//     // sign jwt and send back
+//     const token = await jwt.sign(payload, process.env.JWT_SECRET)
+
+//     res.json({ token })
+//   } catch(err) {
+//     console.log(err)
+//     res.status(500).json({ msg: 'server error'  })
+//   }
+// })
 
 
-// GET /auth-locked - will redirect if bad jwt token is found
-router.get('/auth-locked', authLockedRoute, (req: any, res: any) => {
-  res.json( { msg: 'welcome to the private route!' })
-})
+// // GET /auth-locked - will redirect if bad jwt token is found
+// router.get('/auth-locked', authLockedRoute, (req: any, res: any) => {
+//   res.json( { msg: 'welcome to the private route!' })
+// })
 
 module.exports = router

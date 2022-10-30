@@ -1,6 +1,7 @@
 // require mongoose package
 import mongoose from 'mongoose'
-require('dotenv').config()
+import dotenv from 'dotenv'
+dotenv.config()
 
 const devDB: string = 'mernAuth'
 const MONGODB_URI: string = process.env.MONGODB_URI || `mongodb://127.0.0.1/${devDB}`
