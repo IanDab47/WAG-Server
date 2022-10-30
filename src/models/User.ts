@@ -1,4 +1,5 @@
 // require mongoose ODM
+import { number, string } from 'joi'
 import mongoose, { Document, Schema } from 'mongoose'
 import { UserType } from '../../typings'
 
@@ -22,7 +23,12 @@ const UserSchema: Schema = new Schema({
     required: true
   },
   scores: {
-    type: [Number]
+    type: [
+      {
+        name : string,
+        score : number
+      }
+    ]
   }
 }, {
   timestamps: true
