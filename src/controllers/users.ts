@@ -1,8 +1,8 @@
 // const express = require('express')
 import { NextFunction, Request, Response } from 'express';
-import mongoose, { Document, Model } from 'mongoose'
+import mongoose from 'mongoose'
 import { UserType } from '../../typings'
-import User from '../models/User';
+import User, { UserModel } from '../models/User';
 // import bcrypt from 'bcrypt'
 // import jwt from 'jsonwebtoken'
 // const db = require('../../models')
@@ -11,12 +11,10 @@ import User from '../models/User';
 // const jwt = require('jsonwebtoken')
 // const authLockedRoute = require('./authLockedRoute')
 
-const createUser = (model: Model<any>) => (req: Request, res: Response, next: NextFunction) => {
-  console.log('Creating new user for ' + model.modelName)
-
+const createUser = (req: Request, res: Response, next: NextFunction) => {
   const { name, username, email, password } = req.body
 
-  const user = new model({
+  const user = new User({
     _id: new mongoose.Types.ObjectId(),
     name,
     username,
@@ -30,79 +28,48 @@ const createUser = (model: Model<any>) => (req: Request, res: Response, next: Ne
     .catch((error: any) => res.status(500).json({ error }))
 }
 
-const getAllUsers = (model: Model<any>, populate?: string[]) => (req: Request, res: Response, next: NextFunction) => {
-  console.log('Getting all users for ' + model.modelName)
-
-  model
-    .find<Document>()
-    .populate(populate || [])
-    .then(results => {
-      console.log(results)
-      return res.status(200).json({ results })
-    })
-    .catch(error => {
-      console.log(error)
-      return res.status(500).json({ error })
-    })
-}
-
-const getUser = (model: Model<any>, populate?: string[]) => (req: Request, res: Response, next: NextFunction) => {
-  console.log('Getting user for ' + model.modelName + 'by id')
-
+const getUser = (req: Request, res: Response, next: NextFunction) => {
   const userId = req.params.userId
 
-  model
-    .find<Document>({ _id: userId })
-    .populate(populate || [])
-    .then(result => {
-      if(result) {
-        console.log(result)
-        return res.status(200).json({ result })
-      } else {
-        console.log('Not found')
-        return res.status(404).json({ message: 'Not found' })
-      }
-    })
-    .catch(error => {
-      console.log(error)
-      return res.status(500).json({ error })
-    })
+  return User
+    .findById({ userId })
+    .then(result => res.status(200).json({ result }))
+    .catch(error => res.status(500).json({ error }))
 }
 
-const updateUser = (model: Model<any>, populate?: string[]) => (req: Request, res: Response, next: NextFunction) => {
-  console.log('Updating document for ' + model.modelName + 'by id')
+const getAllUsers = (req: Request, res: Response, next: NextFunction) => {
+  console.log('Getting all users for ' + User.name)
 
+  return User.find<any>()
+    .then((results: any) => res.status(200).json({ results }))
+    .catch((error: any) => res.status(500).json({ error }))
+}
+
+const updateUser = (req: Request, res: Response, next: NextFunction) => {
   const userId = req.params.userId
 
-  model
-    .findOne<Document>({ _id: userId })
-    .populate(populate || [])
-    .then((result) => {
-      if(result) {
-        result.set(req.body)
+  return User
+    .findById({ userId })
+    .then((user) => {
+      if(user) {
+        user.set(req.body)
 
-        return result.save().then(final => {
-          console.log(final)
-          return res.status(200).json({ final })
-        })
+        return user
+          .save()
+          .then(result => res.status(200).json({ result }))
+          .catch(error => res.status(500).json({ error }))
       } else {
-        console.log('Not found')
-        return res.status(404).json({ message: 'Not found' })
+        return res.status(404).json({ message: 'not found' })
       }
     })
-    .catch(error => {
-      console.log(error)
-      return res.status(500).json({ error })
-    })
+    .catch(error => res.status(500).json({ error }))
 }
 
-const deleteUser = (model: Model<any>) => (req: Request, res: Response, next: NextFunction) => {
-  console.log('Deleting user for ' + model.modelName + 'by id')
-
+const deleteUser = (req: Request, res: Response, next: NextFunction) => {
   const userId = req.params.userId;
 
-  model
-    .findByIdAndDelete<Document>(userId)
+  return User
+    .findByIdAndDelete(userId)
     .then((user) => {(
       user ?
         res.status(201).json({ user, message: 'Deleted' })
