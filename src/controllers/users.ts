@@ -65,6 +65,26 @@ const updateUser = (req: Request, res: Response, next: NextFunction) => {
     .catch(error => res.status(500).json({ error }))
 }
 
+const addScore = (req: Request, res: Response, next: NextFunction) => {
+  const userId = req.params.userId 
+
+  return User
+  .findById(userId)
+  .then((user) => {
+    if(user) {
+      user.scores.push({ game: req.body.game, score: req.body.score })
+
+      return user
+        .save()
+        .then(result => res.status(200).json({ result }))
+        .catch(error => res.status(500).json({ error }))
+    } else {
+      return res.status(404).json({ message: 'not found' })
+    }
+  })
+  .catch(error => res.status(500).json({ error }))
+}
+
 const deleteUser = (req: Request, res: Response, next: NextFunction) => {
   const userId = req.params.userId;
 
@@ -85,7 +105,8 @@ export default {
   getAllUsers,
   getUser,
   updateUser,
-  deleteUser
+  deleteUser,
+  addScore
 }
 
 // GET /users - test endpoint

@@ -1,9 +1,21 @@
 // require mongoose ODM
 import { number, string } from 'joi'
 import mongoose, { Document, Schema } from 'mongoose'
-import { UserType } from '../../typings'
+import { UserType, ScoreType } from '../../typings'
 
+export interface ScoreModel extends ScoreType, Document {}
 export interface UserModel extends UserType, Document {}
+
+const ScoreSchema: Schema = new Schema({
+  game: {
+    type: String,
+    required: true
+  },
+  score: {
+    type: Number,
+    required: true
+  }
+})
 
 const UserSchema: Schema = new Schema({
   name: {
@@ -22,14 +34,7 @@ const UserSchema: Schema = new Schema({
     type: String,
     required: true
   },
-  scores: {
-      type: [
-        {
-          game : String,
-          score : Number
-        }
-      ]
-    }
+  scores: [ScoreSchema]
   }, {
   timestamps: true,
 })
