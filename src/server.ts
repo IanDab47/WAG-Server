@@ -1,4 +1,6 @@
 import express, { Express, Request, Response } from 'express';
+import mongoose from 'mongoose';
+import userRoutes from './routes/User'
 import morgan from 'morgan'
 import dotenv from 'dotenv'
 dotenv.config()
@@ -14,7 +16,7 @@ app.get('/', (req, res) => {
 })
 
 // controllers
-app.use('/users', require('./controllers/users.js'))
+app.use('/users', userRoutes)
 
 app.listen(PORT, () => {
   console.log(`is that port ${PORT} I hear? 🐀`)
