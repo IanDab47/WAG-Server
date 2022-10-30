@@ -23,14 +23,14 @@ const UserSchema: Schema = new Schema({
     required: true
   },
   scores: {
-    type: [
-      {
-        name : string,
-        score : number
-      }
-    ]
-  }
-}, {
+      type: [
+        {
+          game : String,
+          score : Number
+        }
+      ]
+    }
+  }, {
   timestamps: true
 })
 
