@@ -24,6 +24,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 // require mongoose ODM
+const joi_1 = require("joi");
 const mongoose_1 = __importStar(require("mongoose"));
 const UserSchema = new mongoose_1.Schema({
     name: {
@@ -43,7 +44,12 @@ const UserSchema = new mongoose_1.Schema({
         required: true
     },
     scores: {
-        type: [Number]
+        type: [
+            {
+                name: joi_1.string,
+                score: joi_1.number
+            }
+        ]
     }
 }, {
     timestamps: true
