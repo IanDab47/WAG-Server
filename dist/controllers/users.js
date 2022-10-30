@@ -29,8 +29,8 @@ const createUser = (req, res, next) => {
 const getUser = (req, res, next) => {
     const userId = req.params.userId;
     return User_1.default
-        .findById({ userId })
-        .then(result => res.status(200).json({ result }))
+        .findById(userId)
+        .then((result) => (result ? res.status(200).json({ result }) : res.status(404).json({ message: 'Not Found' })))
         .catch(error => res.status(500).json({ error }));
 };
 const getAllUsers = (req, res, next) => {

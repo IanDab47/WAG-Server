@@ -5,7 +5,7 @@ import userRoutes from './routes/User'
 import morgan from 'morgan'
 import dotenv from 'dotenv'
 import { config } from './config/config'
-import router from './routes/User';
+// import router from './routes/User';
 
 
 // May need to change line 5 in package.json back from

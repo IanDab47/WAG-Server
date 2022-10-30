@@ -9,6 +9,7 @@ const User_1 = __importDefault(require("./routes/User"));
 const morgan_1 = __importDefault(require("morgan"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const config_1 = require("./config/config");
+// import router from './routes/User';
 // May need to change line 5 in package.json back from
 //    "main": "src/server.ts",
 // to

@@ -1,7 +1,7 @@
 // const express = require('express')
 import { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose'
-import { UserType } from '../../typings'
+import { UserType } from '../../typings';
 import User, { UserModel } from '../models/User';
 // import bcrypt from 'bcrypt'
 // import jwt from 'jsonwebtoken'
@@ -32,8 +32,8 @@ const getUser = (req: Request, res: Response, next: NextFunction) => {
   const userId = req.params.userId
 
   return User
-    .findById({ userId })
-    .then(result => res.status(200).json({ result }))
+    .findById(userId)
+    .then((result) => (result ? res.status(200).json({ result }) : res.status(404).json({message: 'Not Found'})))
     .catch(error => res.status(500).json({ error }))
 }
 
