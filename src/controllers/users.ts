@@ -31,6 +31,8 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { name, username, email, password } = req.body
 
+    if (username.includes('@')) return res.status(400).json({msg: 'Username cannot contain an @ symbol'})
+
     const findUser = await User.findOne({
       email: email
     })
@@ -70,6 +72,66 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
     res.status(500).json({msg: 'server error'})
   }
 }
+
+
+
+
+
+
+// POST /users/login -- validate login credentials
+const loginUser = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { userNameOrEmail, password } = req.body
+
+    let foundUser = null
+
+    if (userNameOrEmail.includes('@')) {
+      // try to find user in the db
+      foundUser = await User.findOne({
+        email: userNameOrEmail
+      })
+    } else if (!userNameOrEmail.includes('@')) {
+      // try to find user in the db
+      foundUser = await User.findOne({
+        username: userNameOrEmail
+      })
+    }
+
+    const noLoginMessage = 'Incorrect username or password'
+
+    // if the user is not found in the db, return and sent a status of 400 with a message
+    if (!foundUser) return res.status(400).json({ msg: noLoginMessage })
+
+    // check the password from the req body against the password in the database
+    const matchPasswords = await bcrypt.compare(password, foundUser.password)
+
+    // if provided password does not match, return an send a status of 400 with a message
+    if (!matchPasswords) return res.status(400).json({ msg: noLoginMessage })
+
+    // create jwt payload
+    const payload = {
+      username: foundUser.username,
+      email: foundUser.email,
+      id: foundUser.id
+    }
+
+    // sign jwt and send back
+    const token = await jwt.sign(payload, process.env.JWT_SECRET)
+
+    console.log(`user ${foundUser.username} is logged in!`)
+
+    res.json({ token })
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({ msg: 'server error' })
+  }
+}
+
+
+
+
+
+
 
 
 const getUser = (req: Request, res: Response, next: NextFunction) => {
@@ -150,52 +212,8 @@ export default {
   getUser,
   updateUser,
   deleteUser,
-  addScore
+  addScore,
+  loginUser
 }
 
 
-
-
-// // POST /users/login -- validate login credentials
-// router.post('/login', async (req: any, res: any) => {
-//   try {
-//     // try to find user in the db
-//     const foundUser = await db.User.findOne({
-//       email: req.body.email
-//     })
-
-//     const noLoginMessage = 'Incorrect username or password'
-
-//     // if the user is not found in the db, return and sent a status of 400 with a message
-//     if(!foundUser) return res.status(400).json({ msg: noLoginMessage })
-
-//     // check the password from the req body against the password in the database
-//     const matchPasswords = await bcrypt.compare(req.body.password, foundUser.password)
-
-//     // if provided password does not match, return an send a status of 400 with a message
-//     if(!matchPasswords) return res.status(400).json({ msg: noLoginMessage })
-
-//     // create jwt payload
-//     const payload = {
-//       name: foundUser.name,
-//       email: foundUser.email,
-//       id: foundUser.id
-//     }
-
-//     // sign jwt and send back
-//     const token = await jwt.sign(payload, process.env.JWT_SECRET)
-
-//     res.json({ token })
-//   } catch(err) {
-//     console.log(err)
-//     res.status(500).json({ msg: 'server error'  })
-//   }
-// })
-
-
-// // GET /auth-locked - will redirect if bad jwt token is found
-// router.get('/auth-locked', authLockedRoute, (req: any, res: any) => {
-//   res.json( { msg: 'welcome to the private route!' })
-// })
-
-// module.exports = router
