@@ -77,7 +77,7 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
 
 
 
-
+// user login
 // POST /users/login -- validate login credentials
 const loginUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -128,8 +128,10 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
 }
 
 
-
-
+const lockingRouteExample = (req: Request, res: Response, next: NextFunction) => {
+  console.log(res.locals)
+  res.json({ msg: 'welcome to the private route!' })
+}
 
 
 
@@ -213,7 +215,8 @@ export default {
   updateUser,
   deleteUser,
   addScore,
-  loginUser
+  loginUser,
+  lockingRouteExample
 }
 
 
